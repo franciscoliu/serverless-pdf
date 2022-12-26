@@ -5,16 +5,13 @@ module.exports.hello = async (event) => {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
+        message: 'Function is executed',
         input: event,
       },
       null,
       2
     ),
   };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
 const fs = require('fs');
@@ -24,15 +21,18 @@ const AWS = require('aws-sdk');
 AWS.config.setPromisesDependency(require('bluebird'));
 
 const s3 = new AWS.S3();
+//Specify on the region of AWS and handling credential problems
 AWS.config.region = 'us-east-1';
 var credentials = new AWS.SharedIniFileCredentials({profile: 'myspecial-profile'});
 AWS.config.credentials = credentials;
 
+//Actual function to merge pdf
 const mergeFiles = async (s3Files) => {
 
     let filesToMerge = "";
     for(const file of s3Files) {
         const paramsFile = {
+            //Not Done here
             Bucket: "<bucket-name>",
             Key: `${file}.pdf`
         };
@@ -44,12 +44,14 @@ const mergeFiles = async (s3Files) => {
         filesToMerge += `/tmp/${file}.pdf` + " ";
     }
 
-
+    //Execute via ghostscript
     await shell.exec(`gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=/tmp/result.pdf -dBATCH ${filesToMerge}`);
 
+    //Lambda function access to /tmp folder to merge files
     const fileContent = await fs.createReadStream(`/tmp/result.pdf`);
 
     const params = {
+        //Not Done here
         Bucket: "<bucket-name>",
         Key: `results/result.pdf`,
         Body: fileContent,
@@ -57,7 +59,6 @@ const mergeFiles = async (s3Files) => {
     };
 
     const uploadResponse = await s3.upload(params).promise();
-
     return uploadResponse;
 }
 
