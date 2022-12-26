@@ -57,7 +57,7 @@ const mergeFiles = async (s3Files) => {
         Body: fileContent,
         ContentType: "application/pdf"
     };
-
+ 
     const uploadResponse = await s3.upload(params).promise();
     return uploadResponse;
 }
