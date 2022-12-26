@@ -12,4 +12,4 @@ layers and handler of the created function. (detailed can be found in package-lo
 6. sls deploy
 
 Side note: I used nodejs to run this so there are some packages need to be downloaded using npm install. I did not upload node-module to github because
-there are too many files.
+there are too many files. 
